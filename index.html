@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111111">
+<title>32 Jersey Challenge</title>
+<style>
+:root{--ink:#111;--muted:#686868;--line:#ddd;--panel:#f6f6f6;--white:#fff;--green:#167a3d;--red:#a21d2c}
+*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input{font:inherit}button{cursor:pointer}.wrap{max-width:760px;margin:auto;padding:18px 14px 36px}
+header{display:flex;justify-content:space-between;gap:14px;align-items:flex-end;margin-bottom:14px}h1{font-size:27px;line-height:1;margin:0;font-weight:900}.sub{font-size:13px;color:var(--muted);margin-top:6px}.score{text-align:right;font-size:28px;font-weight:900;white-space:nowrap}.score small{display:block;font-size:11px;color:var(--muted);font-weight:500}
+.panel{border:1px solid var(--line);border-radius:16px;padding:15px;margin:12px 0;background:var(--panel)}.panel h2{font-size:17px;margin:0}.bar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+input{width:100%;padding:13px;border:1px solid #bbb;border-radius:10px;background:#fff}.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:11px 14px;font-weight:750}.btn.primary{background:#111;color:#fff;border-color:#111}.btn.green{background:var(--green);color:#fff;border-color:var(--green)}
+.row{display:flex;gap:8px}.row>*{min-width:0}.row input{flex:1}.hidden{display:none!important}.error{color:var(--red);font-size:13px;margin-top:8px}.notice{font-size:13px;color:var(--muted);line-height:1.45}
+.players{display:flex;gap:6px;overflow-x:auto;padding-bottom:5px}.tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 13px;white-space:nowrap}.tab.active{background:#111;color:#fff;border-color:#111}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.team{border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px;text-align:left;min-height:62px;display:flex;align-items:center;justify-content:space-between;gap:7px}.team.done{background:#e9eee9;border-color:#82a58e}.name{font-weight:750;font-size:13px}.meta{font-size:11px;color:var(--muted)}.tick{font-size:18px;font-weight:900}.leader{display:grid;grid-template-columns:30px 1fr auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.leader:last-child{border-bottom:0}.rank,.points{font-weight:900}.lname{font-weight:700}.wanted{display:flex;flex-wrap:wrap;gap:7px}.wanted span{background:#fff;border:1px solid var(--line);border-radius:9px;padding:7px 9px;font-size:12px}.tag{display:inline-block;border-radius:999px;padding:4px 7px;font-size:11px;background:#eee;margin-left:5px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#111;color:#fff;padding:11px 15px;border-radius:10px;display:none;z-index:5;font-size:13px}.toast.show{display:block}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:18px;z-index:10}.modalbox{background:#fff;border-radius:16px;max-width:420px;width:100%;padding:18px}.modalbox h3{margin:0 0 8px}.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+@media(min-width:600px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header>
+  <div><h1>🏈 32 Jersey Challenge</h1><div class="sub">Spot all 32 NFL teams. First to the full set wins.</div></div>
+  <div id="score" class="score">—<small>your score</small></div>
+</header>
+
+<section id="setup" class="panel">
+  <h2>Join your game</h2>
+  <p class="notice">Enter the game code and your name. No account or password is required.</p>
+  <input id="nameInput" maxlength="24" placeholder="Your name" autocomplete="nickname">
+  <div style="height:8px"></div>
+  <div class="row"><input id="roomInput" maxlength="12" placeholder="Game code e.g. LONDON26" autocomplete="off"><button id="joinBtn" class="btn primary">Join</button></div>
+  <div id="setupError" class="error"></div>
+</section>
+
+<section id="game" class="hidden">
+  <div class="panel">
+    <div class="bar"><h2 id="welcome">Game</h2><button id="leaveBtn" class="btn">Leave</button></div>
+    <div id="playerPicker" class="players"></div>
+  </div>
+
+  <div class="panel">
+    <div class="bar"><h2>Your teams</h2><span id="remaining" class="notice"></span></div>
+    <div id="grid" class="grid"></div>
+  </div>
+
+  <div class="panel">
+    <div class="bar"><h2>🏆 Live leaderboard</h2><span class="notice">updates automatically</span></div>
+    <div id="leaders"></div>
+  </div>
+
+  <div class="panel">
+    <div class="bar"><h2>🎯 Most Wanted</h2><span class="notice">nobody has found these yet</span></div>
+    <div id="wanted" class="wanted"></div>
+  </div>
+
+  <div class="panel">
+    <h2>📷 Photo evidence</h2>
+    <p class="notice">Photos are optional. They are <strong>not uploaded or stored</strong> by this app. Use your phone camera if you want proof for an argument later.</p>
+  </div>
+</section>
+</main>
+
+<div id="toast" class="toast"></div>
+<div id="claimModal" class="modal hidden">
+  <div class="modalbox">
+    <h3 id="claimTitle">Claim team?</h3>
+    <p class="notice">Only claim a team when you can clearly see the team name, logo or unmistakable jersey. A photo is optional and stays on your phone.</p>
+    <div class="actions">
+      <button id="cancelClaim" class="btn">Cancel</button>
+      <button id="confirmClaim" class="btn primary">Claim sighting</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+import { getDatabase, ref, set, update, onValue, get } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+import firebaseConfig from "./firebase-config.js";
+
+const teams=[
+["Arizona Cardinals","ARI","NFC"],["Atlanta Falcons","ATL","NFC"],["Baltimore Ravens","BAL","AFC"],["Buffalo Bills","BUF","AFC"],
+["Carolina Panthers","CAR","NFC"],["Chicago Bears","CHI","NFC"],["Cincinnati Bengals","CIN","AFC"],["Cleveland Browns","CLE","AFC"],
+["Dallas Cowboys","DAL","NFC"],["Denver Broncos","DEN","AFC"],["Detroit Lions","DET","NFC"],["Green Bay Packers","GB","NFC"],
+["Houston Texans","HOU","AFC"],["Indianapolis Colts","IND","AFC"],["Jacksonville Jaguars","JAX","AFC"],["Kansas City Chiefs","KC","AFC"],
+["Las Vegas Raiders","LV","AFC"],["Los Angeles Chargers","LAC","AFC"],["Los Angeles Rams","LAR","NFC"],["Miami Dolphins","MIA","AFC"],
+["Minnesota Vikings","MIN","NFC"],["New England Patriots","NE","AFC"],["New Orleans Saints","NO","NFC"],["New York Giants","NYG","NFC"],
+["New York Jets","NYJ","AFC"],["Philadelphia Eagles","PHI","NFC"],["Pittsburgh Steelers","PIT","AFC"],["San Francisco 49ers","SF","NFC"],
+["Seattle Seahawks","SEA","NFC"],["Tampa Bay Buccaneers","TB","NFC"],["Tennessee Titans","TEN","AFC"],["Washington Commanders","WAS","NFC"]
+];
+
+const app=initializeApp(firebaseConfig);
+const db=getDatabase(app);
+const auth=getAuth(app);
+let uid=null,room="",state=null,currentPlayerId=null,pendingTeam=null,unsubscribe=null;
+
+const $=id=>document.getElementById(id);
+const clean=s=>String(s||"").trim().toUpperCase().replace(/[^A-Z0-9_-]/g,"").slice(0,12);
+const playerId=()=>uid;
+
+function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2200)}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+
+async function ensureAuth(){const c=await signInAnonymously(auth);uid=c.user.uid}
+
+async function join(){
+  $("setupError").textContent="";
+  const code=clean($("roomInput").value);
+  const name=String($("nameInput").value||"").trim().slice(0,24);
+  if(!name){$("setupError").textContent="Enter your name.";return}
+  if(!code){$("setupError").textContent="Enter a game code.";return}
+  try{
+    await ensureAuth();
+    const snap=await get(ref(db,`games/${code}`));
+    if(!snap.exists()){$("setupError").textContent="That game code doesn't exist. Ask the host to create it.";return}
+    const existing=Object.entries(snap.val().players||{});
+    if(existing.length>=8 && !snap.val().players?.[uid]){$("setupError").textContent="This game already has 8 players.";return}
+    const duplicate=existing.some(([id,p])=>id!==uid && String(p.name||"").trim().toLowerCase()===name.toLowerCase());
+    if(duplicate){$("setupError").textContent="That player name is already being used. Choose another.";return}
+    room=code;
+    currentPlayerId=uid;
+    localStorage.setItem("jerseyRoom",room);
+    await update(ref(db,`games/${room}/players/${uid}`),{name,claims:(snap.val().players?.[uid]?.claims)||{}});
+    showGame();
+    listen();
+  }catch(e){$("setupError").textContent="Couldn't connect. Check the Firebase setup and try again.";console.error(e)}
+}
+
+function listen(){
+  if(unsubscribe)unsubscribe();
+  unsubscribe=onValue(ref(db,`games/${room}`),snap=>{state=snap.val();if(state)render()});
+}
+
+function showGame(){ $("setup").classList.add("hidden");$("game").classList.remove("hidden") }
+function leave(){if(unsubscribe)unsubscribe();localStorage.removeItem("jerseyRoom");location.reload()}
+
+function players(){return Object.entries(state.players||{}).map(([id,p])=>({id,...p}))}
+function claimsFor(id){return state.players?.[id]?.claims||{}}
+function countClaims(id){return Object.keys(claimsFor(id)).length}
+
+function render(){
+  const ps=players();
+  if(!currentPlayerId || !state.players?.[currentPlayerId]) currentPlayerId=ps[0]?.id;
+  const me=state.players?.[currentPlayerId];
+  $("welcome").innerHTML=`${esc(me?.name||"Player")} <span class="tag">${esc(room)}</span>`;
+  $("score").innerHTML=`${countClaims(currentPlayerId)}/32<small>your score</small>`;
+  $("remaining").textContent=`${32-countClaims(currentPlayerId)} remaining`;
+
+  const picker=$("playerPicker");picker.innerHTML="";
+  ps.forEach(p=>{const b=document.createElement("button");b.className="tab "+(p.id===currentPlayerId?"active":"");b.textContent=`${p.name} · ${countClaims(p.id)}`;b.onclick=()=>{currentPlayerId=p.id;render()};picker.appendChild(b)});
+
+  const grid=$("grid");grid.innerHTML="";
+  teams.forEach(([name,abbr,conf],i)=>{
+    const b=document.createElement("button");b.className="team "+(claimsFor(currentPlayerId)[i]?"done":"");
+    b.innerHTML=`<span><span class="name">${name}</span><br><span class="meta">${abbr} · ${conf}</span></span><span class="tick">${claimsFor(currentPlayerId)[i]?"✓":"＋"}</span>`;
+    b.onclick=()=>{if(!claimsFor(currentPlayerId)[i])openClaim(i)};grid.appendChild(b)
+  });
+
+  const leaders=$("leaders");leaders.innerHTML="";
+  ps.sort((a,b)=>countClaims(b.id)-countClaims(a.id)||a.name.localeCompare(b.name)).forEach((p,n)=>{
+    const d=document.createElement("div");d.className="leader";d.innerHTML=`<span class="rank">${n+1}</span><span class="lname">${esc(p.name)}</span><span class="points">${countClaims(p.id)}/32</span>`;leaders.appendChild(d)
+  });
+
+  const wanted=$("wanted");wanted.innerHTML="";
+  teams.forEach(([name],i)=>{if(!ps.some(p=>claimsFor(p.id)[i])){const s=document.createElement("span");s.textContent=name;wanted.appendChild(s)}});
+  if(!wanted.children.length){const s=document.createElement("span");s.textContent="🎉 Every team has been spotted!";wanted.appendChild(s)}
+}
+
+async function openClaim(i){pendingTeam=i;$("claimTitle").textContent=`Claim ${teams[i][0]}?`;$("claimModal").classList.remove("hidden")}
+$("cancelClaim").onclick=()=>{pendingTeam=null;$("claimModal").classList.add("hidden")};
+$("confirmClaim").onclick=async()=>{
+  const i=pendingTeam;if(i===null)return;
+  $("claimModal").classList.add("hidden");pendingTeam=null;
+  try{
+    const path=`games/${room}/players/${currentPlayerId}/claims/${i}`;
+    await set(ref(db,path),Date.now());
+    toast(`✓ ${teams[i][0]} added`);
+  }catch(e){toast("Couldn't save that sighting");console.error(e)}
+};
+
+$("joinBtn").onclick=join;
+$("leaveBtn").onclick=leave;
+$("roomInput").addEventListener("keydown",e=>{if(e.key==="Enter")join()});
+
+async function createPlayer(){
+  await ensureAuth();
+  const name=(prompt("Enter your player name:")||"").trim().slice(0,24);
+  if(!name)return;
+  const id=uid;
+  await update(ref(db,`games/${room}/players/${id}`),{name,claims:{}});
+  currentPlayerId=id;
+  render();
+}
+
+async function boot(){
+  const saved=localStorage.getItem("jerseyRoom");
+  if(saved){
+    try{
+      await ensureAuth();
+      const snap=await get(ref(db,`games/${saved}`));
+      if(snap.exists()){room=saved;showGame();listen();return}
+    }catch(e){}
+  }
+}
+boot();
+window.createPlayer=createPlayer;
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "rules": {
+    "games": {
+      "$game": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        "players": {
+          "$player": {
+            ".validate": "newData.hasChildren(['name','claims'])",
+            "name": { ".validate": "newData.isString() && newData.val().length <= 24" },
+            "claims": {
+              "$team": { ".validate": "newData.isNumber()" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
