@@ -75,8 +75,6 @@ input{width:100%;padding:13px;border:1px solid #bbb;border-radius:10px;backgroun
     </div>
   </div>
 </div>
-
-<script>alert("PAGE JAVASCRIPT WORKS");</script>
   
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
@@ -184,7 +182,6 @@ $("confirmClaim").onclick=async()=>{
   }catch(e){toast("Couldn't save that sighting");console.error(e)}
 };
 
-alert("JavaScript is working");
 $("joinBtn").onclick=join;
 $("leaveBtn").onclick=leave;
 $("roomInput").addEventListener("keydown",e=>{if(e.key==="Enter")join()});
