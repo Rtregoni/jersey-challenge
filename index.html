@@ -38,7 +38,13 @@ input{width:100%;padding:13px;border:1px solid #bbb;border-radius:10px;backgroun
 
 <section id="game" class="hidden">
   <div class="panel">
-    <div class="bar"><h2 id="welcome">Game</h2><button id="leaveBtn" class="btn">Leave</button></div>
+    <div class="bar">
+  <h2 id="welcome">Game</h2>
+  <div>
+    <button id="changeNameBtn" class="btn">Change name</button>
+    <button id="leaveBtn" class="btn">Leave</button>
+  </div>
+</div>
     <div id="playerPicker" class="players"></div>
   </div>
 
@@ -181,7 +187,29 @@ $("confirmClaim").onclick=async()=>{
     toast(`✓ ${teams[i][0]} added`);
   }catch(e){toast("Couldn't save that sighting");console.error(e)}
 };
+$("changeNameBtn").onclick=async()=>{
+  const current=state?.players?.[uid]?.name||"";
+  const name=(prompt("Enter your new name:",current)||"").trim().slice(0,24);
+  if(!name || name===current)return;
 
+  const duplicate=players().some(p=>
+    p.id!==uid &&
+    String(p.name||"").trim().toLowerCase()===name.toLowerCase()
+  );
+
+  if(duplicate){
+    toast("That player name is already being used.");
+    return;
+  }
+
+  try{
+    await update(ref(db,`games/${room}/players/${uid}`),{name});
+    toast("Name updated ✓");
+  }catch(e){
+    toast("Couldn't update your name");
+    console.error(e);
+  }
+};
 $("joinBtn").onclick=join;
 $("leaveBtn").onclick=leave;
 $("roomInput").addEventListener("keydown",e=>{if(e.key==="Enter")join()});
