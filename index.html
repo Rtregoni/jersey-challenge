@@ -1,241 +1,1502 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#111111">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>32 Jersey Challenge</title>
+
 <style>
-:root{--ink:#111;--muted:#686868;--line:#ddd;--panel:#f6f6f6;--white:#fff;--green:#167a3d;--red:#a21d2c}
-*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-button,input{font:inherit}button{cursor:pointer}.wrap{max-width:760px;margin:auto;padding:18px 14px 36px}
-header{display:flex;justify-content:space-between;gap:14px;align-items:flex-end;margin-bottom:14px}h1{font-size:27px;line-height:1;margin:0;font-weight:900}.sub{font-size:13px;color:var(--muted);margin-top:6px}.score{text-align:right;font-size:28px;font-weight:900;white-space:nowrap}.score small{display:block;font-size:11px;color:var(--muted);font-weight:500}
-.panel{border:1px solid var(--line);border-radius:16px;padding:15px;margin:12px 0;background:var(--panel)}.panel h2{font-size:17px;margin:0}.bar{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
-input{width:100%;padding:13px;border:1px solid #bbb;border-radius:10px;background:#fff}.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:11px 14px;font-weight:750}.btn.primary{background:#111;color:#fff;border-color:#111}.btn.green{background:var(--green);color:#fff;border-color:var(--green)}
-.row{display:flex;gap:8px}.row>*{min-width:0}.row input{flex:1}.hidden{display:none!important}.error{color:var(--red);font-size:13px;margin-top:8px}.notice{font-size:13px;color:var(--muted);line-height:1.45}
-.players{display:flex;gap:6px;overflow-x:auto;padding-bottom:5px}.tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:9px 13px;white-space:nowrap}.tab.active{background:#111;color:#fff;border-color:#111}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.team{border:1px solid var(--line);background:#fff;border-radius:12px;padding:11px;text-align:left;min-height:62px;display:flex;align-items:center;justify-content:space-between;gap:7px}.team.done{background:#e9eee9;border-color:#82a58e}.name{font-weight:750;font-size:13px}.meta{font-size:11px;color:var(--muted)}.tick{font-size:18px;font-weight:900}.leader{display:grid;grid-template-columns:30px 1fr auto;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.leader:last-child{border-bottom:0}.rank,.points{font-weight:900}.lname{font-weight:700}.wanted{display:flex;flex-wrap:wrap;gap:7px}.wanted span{background:#fff;border:1px solid var(--line);border-radius:9px;padding:7px 9px;font-size:12px}.tag{display:inline-block;border-radius:999px;padding:4px 7px;font-size:11px;background:#eee;margin-left:5px}
-.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#111;color:#fff;padding:11px 15px;border-radius:10px;display:none;z-index:5;font-size:13px}.toast.show{display:block}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:18px;z-index:10}.modalbox{background:#fff;border-radius:16px;max-width:420px;width:100%;padding:18px}.modalbox h3{margin:0 0 8px}.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
-@media(min-width:600px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:#f4f4f4;
+  color:#111;
+}
+
+button{
+  font:inherit;
+  cursor:pointer;
+}
+
+.hidden{display:none!important}
+
+.wrap{
+  max-width:1100px;
+  margin:0 auto;
+  padding:20px;
+}
+
+.panel{
+  background:#fff;
+  border-radius:14px;
+  padding:20px;
+  margin-bottom:18px;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+
+h1,h2,h3,p{margin-top:0}
+
+h1{
+  font-size:34px;
+  margin-bottom:8px;
+}
+
+.subtitle{
+  color:#666;
+  margin-bottom:24px;
+}
+
+input{
+  width:100%;
+  padding:14px;
+  border:1px solid #ccc;
+  border-radius:8px;
+  font-size:16px;
+  margin-bottom:12px;
+}
+
+.btn{
+  border:0;
+  border-radius:8px;
+  padding:12px 16px;
+  background:#111;
+  color:#fff;
+  font-weight:bold;
+}
+
+.btn.secondary{
+  background:#e8e8e8;
+  color:#111;
+}
+
+.btn.small{
+  padding:9px 12px;
+  font-size:14px;
+}
+
+.setup{
+  max-width:500px;
+  margin:60px auto;
+}
+
+.error{
+  color:#b00020;
+  margin-top:10px;
+  min-height:20px;
+}
+
+.bar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+}
+
+.bar-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+#welcome{
+  margin:0;
+}
+
+.tag{
+  display:inline-block;
+  font-size:12px;
+  background:#eee;
+  padding:4px 7px;
+  border-radius:5px;
+  vertical-align:middle;
+  margin-left:6px;
+}
+
+.progress-wrap{
+  margin-top:18px;
+}
+
+.progress-text{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  margin-bottom:8px;
+}
+
+.progress-number{
+  font-size:34px;
+  font-weight:800;
+}
+
+.progress-label{
+  color:#666;
+}
+
+.progress{
+  height:14px;
+  background:#e5e5e5;
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.progress-bar{
+  height:100%;
+  width:0;
+  background:#111;
+  transition:width .25s ease;
+}
+
+.conference-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+
+.conference{
+  border:1px solid #ddd;
+  border-radius:12px;
+  overflow:hidden;
+}
+
+.conference-title{
+  padding:15px;
+  background:#111;
+  color:#fff;
+  font-size:22px;
+  font-weight:bold;
+  display:flex;
+  justify-content:space-between;
+}
+
+.division{
+  border-top:1px solid #ddd;
+}
+
+.division-title{
+  padding:12px 15px;
+  background:#f7f7f7;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:bold;
+}
+
+.complete{
+  color:#16803c;
+  font-size:13px;
+}
+
+.team{
+  width:100%;
+  border:0;
+  border-top:1px solid #eee;
+  background:#fff;
+  padding:13px 15px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  text-align:left;
+}
+
+.team:hover{
+  background:#f5f5f5;
+}
+
+.team.done{
+  background:#edf8f0;
+}
+
+.team-name{
+  font-weight:bold;
+}
+
+.team-meta{
+  display:block;
+  color:#777;
+  font-size:12px;
+  margin-top:3px;
+}
+
+.team-status{
+  text-align:right;
+  font-size:13px;
+  color:#777;
+}
+
+.team.done .team-status{
+  color:#16803c;
+  font-weight:bold;
+}
+
+.spotted-by{
+  display:block;
+  font-size:11px;
+  font-weight:normal;
+  color:#555;
+  margin-top:3px;
+}
+
+.leaderboard{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:10px;
+}
+
+.leader{
+  border:1px solid #ddd;
+  border-radius:10px;
+  padding:12px;
+  background:#fafafa;
+}
+
+.leader-rank{
+  font-size:12px;
+  color:#777;
+}
+
+.leader-name{
+  font-weight:bold;
+  margin:3px 0;
+}
+
+.leader-score{
+  font-size:24px;
+  font-weight:800;
+}
+
+.remaining{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+}
+
+.remaining span{
+  background:#eee;
+  padding:7px 9px;
+  border-radius:6px;
+  font-size:13px;
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  z-index:10;
+}
+
+.modal-box{
+  background:#fff;
+  max-width:420px;
+  width:100%;
+  border-radius:14px;
+  padding:24px;
+}
+
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:20px;
+}
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:25px;
+  transform:translateX(-50%);
+  background:#111;
+  color:#fff;
+  padding:12px 18px;
+  border-radius:8px;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .2s;
+  z-index:20;
+}
+
+.toast.show{
+  opacity:1;
+}
+
+@media(max-width:700px){
+  .conference-grid{
+    grid-template-columns:1fr;
+  }
+
+  .wrap{
+    padding:12px;
+  }
+
+  h1{
+    font-size:28px;
+  }
+
+  .panel{
+    padding:15px;
+  }
+}
 </style>
 </head>
+
 <body>
-<main class="wrap">
-<header>
-  <div><h1>🏈 32 Jersey Challenge</h1><div class="sub">Spot all 32 NFL teams. First to the full set wins.</div></div>
-  <div id="score" class="score">—<small>your score</small></div>
-</header>
 
-<section id="setup" class="panel">
-  <h2>Join your game</h2>
-  <p class="notice">Enter the game code and your name. No account or password is required.</p>
-  <input id="nameInput" maxlength="24" placeholder="Your name" autocomplete="nickname">
-  <div style="height:8px"></div>
-  <div class="row"><input id="roomInput" maxlength="12" placeholder="Game code e.g. LONDON26" autocomplete="off"><button id="joinBtn" class="btn primary">Join</button></div>
-  <div id="setupError" class="error"></div>
-</section>
+<div class="wrap">
 
-<section id="game" class="hidden">
-  <div class="panel">
-    <div class="bar">
-  <h2 id="welcome">Game</h2>
-  <div>
-    <button id="changeNameBtn" class="btn">Change name</button>
-    <button id="leaveBtn" class="btn">Leave</button>
-  </div>
+  <!-- SETUP -->
+  <section id="setup" class="setup panel">
+    <h1>32 Jersey Challenge</h1>
+    <p class="subtitle">
+      Work together to spot all 32 NFL teams.
+    </p>
+
+    <input id="nameInput" type="text" maxlength="24" placeholder="Your name">
+    <input id="roomInput" type="text" maxlength="12" placeholder="Game code">
+
+    <button id="joinBtn" class="btn" style="width:100%">
+      Join Game
+    </button>
+
+    <div id="setupError" class="error"></div>
+  </section>
+
+
+  <!-- GAME -->
+  <section id="game" class="hidden">
+
+    <div class="panel">
+
+      <div class="bar">
+        <h2 id="welcome">32 Jersey Challenge</h2>
+
+        <div class="bar-actions">
+          <button id="changeNameBtn" class="btn secondary small">
+            Change name
+          </button>
+
+          <button id="leaveBtn" class="btn secondary small">
+            Leave
+          </button>
+        </div>
+      </div>
+
+      <div class="progress-wrap">
+
+        <div class="progress-text">
+          <div>
+            <div id="score" class="progress-number">0/32</div>
+            <div class="progress-label">jerseys spotted</div>
+          </div>
+
+          <strong id="remainingCount">32 remaining</strong>
+        </div>
+
+        <div class="progress">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- SPOTTER LEADERBOARD -->
+    <div class="panel">
+      <h2>Spotter Credits</h2>
+      <p class="subtitle">
+        Who has spotted the most unique teams?
+      </p>
+
+      <div id="leaders" class="leaderboard"></div>
+    </div>
+
+
+    <!-- TEAMS -->
+    <div class="panel">
+
+      <div class="bar">
+        <div>
+          <h2>All 32 Teams</h2>
+          <p class="subtitle">
+            First person to spot a team gets the credit.
+          </p>
+        </div>
+      </div>
+
+      <div id="conferenceGrid" class="conference-grid"></div>
+
+    </div>
+
+
+    <!-- REMAINING -->
+    <div class="panel">
+
+      <h2>Still To Spot</h2>
+
+      <div id="remainingTeams" class="remaining"></div>
+
+    </div>
+
+  </section>
+
 </div>
-    <div id="playerPicker" class="players"></div>
+
+
+<!-- CLAIM MODAL -->
+<div id="claimModal" class="modal hidden">
+
+  <div class="modal-box">
+
+    <h2 id="claimTitle">Spot this team?</h2>
+
+    <p>
+      Confirm that you have spotted this jersey.
+      The first player to claim a team gets the credit for the whole group.
+    </p>
+
+    <div class="modal-actions">
+
+      <button id="cancelClaim" class="btn secondary">
+        Cancel
+      </button>
+
+      <button id="confirmClaim" class="btn">
+        Confirm
+      </button>
+
+    </div>
+
   </div>
 
-  <div class="panel">
-    <div class="bar"><h2>Your teams</h2><span id="remaining" class="notice"></span></div>
-    <div id="grid" class="grid"></div>
-  </div>
+</div>
 
-  <div class="panel">
-    <div class="bar"><h2>🏆 Live leaderboard</h2><span class="notice">updates automatically</span></div>
-    <div id="leaders"></div>
-  </div>
-
-  <div class="panel">
-    <div class="bar"><h2>🎯 Most Wanted</h2><span class="notice">nobody has found these yet</span></div>
-    <div id="wanted" class="wanted"></div>
-  </div>
-
-  <div class="panel">
-    <h2>📷 Photo evidence</h2>
-    <p class="notice">Photos are optional. They are <strong>not uploaded or stored</strong> by this app. Use your phone camera if you want proof for an argument later.</p>
-  </div>
-</section>
-</main>
 
 <div id="toast" class="toast"></div>
-<div id="claimModal" class="modal hidden">
-  <div class="modalbox">
-    <h3 id="claimTitle">Claim team?</h3>
-    <p class="notice">Only claim a team when you can clearly see the team name, logo or unmistakable jersey. A photo is optional and stays on your phone.</p>
-    <div class="actions">
-      <button id="cancelClaim" class="btn">Cancel</button>
-      <button id="confirmClaim" class="btn primary">Claim sighting</button>
-    </div>
-  </div>
-</div>
-  
+
+
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
-import { getDatabase, ref, set, update, onValue, get } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
-import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js";
+
+import {
+  getDatabase,
+  ref,
+  update,
+  get,
+  onValue,
+  runTransaction
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-database.js";
+
+import {
+  getAuth,
+  signInAnonymously
+} from "https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js";
+
 import firebaseConfig from "./firebase-config.js";
 
-const teams=[
-["Arizona Cardinals","ARI","NFC"],["Atlanta Falcons","ATL","NFC"],["Baltimore Ravens","BAL","AFC"],["Buffalo Bills","BUF","AFC"],
-["Carolina Panthers","CAR","NFC"],["Chicago Bears","CHI","NFC"],["Cincinnati Bengals","CIN","AFC"],["Cleveland Browns","CLE","AFC"],
-["Dallas Cowboys","DAL","NFC"],["Denver Broncos","DEN","AFC"],["Detroit Lions","DET","NFC"],["Green Bay Packers","GB","NFC"],
-["Houston Texans","HOU","AFC"],["Indianapolis Colts","IND","AFC"],["Jacksonville Jaguars","JAX","AFC"],["Kansas City Chiefs","KC","AFC"],
-["Las Vegas Raiders","LV","AFC"],["Los Angeles Chargers","LAC","AFC"],["Los Angeles Rams","LAR","NFC"],["Miami Dolphins","MIA","AFC"],
-["Minnesota Vikings","MIN","NFC"],["New England Patriots","NE","AFC"],["New Orleans Saints","NO","NFC"],["New York Giants","NYG","NFC"],
-["New York Jets","NYJ","AFC"],["Philadelphia Eagles","PHI","NFC"],["Pittsburgh Steelers","PIT","AFC"],["San Francisco 49ers","SF","NFC"],
-["Seattle Seahawks","SEA","NFC"],["Tampa Bay Buccaneers","TB","NFC"],["Tennessee Titans","TEN","AFC"],["Washington Commanders","WAS","NFC"]
-];
 
-const app=initializeApp(firebaseConfig);
-const db=getDatabase(app);
-const auth=getAuth(app);
-let uid=null,room="",state=null,currentPlayerId=null,pendingTeam=null,unsubscribe=null;
+/* =========================
+   FIREBASE
+========================= */
 
-const $=id=>document.getElementById(id);
-const clean=s=>String(s||"").trim().toUpperCase().replace(/[^A-Z0-9_-]/g,"").slice(0,12);
-const playerId=()=>uid;
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
 
-function toast(msg){$("toast").textContent=msg;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2200)}
-function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 
-async function ensureAuth(){const c=await signInAnonymously(auth);uid=c.user.uid}
+/* =========================
+   TEAMS
+========================= */
 
-async function join(){
-  $("setupError").textContent="";
-  const code=clean($("roomInput").value);
-  const name=String($("nameInput").value||"").trim().slice(0,24);
-  if(!name){$("setupError").textContent="Enter your name.";return}
-  if(!code){$("setupError").textContent="Enter a game code.";return}
-  try{
-    await ensureAuth();
-    const snap=await get(ref(db,`games/${code}`));
-    if(!snap.exists()){$("setupError").textContent="That game code doesn't exist. Ask the host to create it.";return}
-    const existing=Object.entries(snap.val().players||{});
-    if(existing.length>=8 && !snap.val().players?.[uid]){$("setupError").textContent="This game already has 8 players.";return}
-    const duplicate=existing.some(([id,p])=>id!==uid && String(p.name||"").trim().toLowerCase()===name.toLowerCase());
-    if(duplicate){$("setupError").textContent="That player name is already being used. Choose another.";return}
-    room=code;
-    currentPlayerId=uid;
-    localStorage.setItem("jerseyRoom",room);
-    await update(ref(db,`games/${room}/players/${uid}`),{name,claims:(snap.val().players?.[uid]?.claims)||{}});
-    showGame();
-    listen();
-  }catch(e){$("setupError").textContent="Couldn't connect. Check the Firebase setup and try again.";console.error(e)}
-}
+const conferences = {
 
-function listen(){
-  if(unsubscribe)unsubscribe();
-  unsubscribe=onValue(ref(db,`games/${room}`),snap=>{state=snap.val();if(state)render()});
-}
+  AFC: {
 
-function showGame(){ $("setup").classList.add("hidden");$("game").classList.remove("hidden") }
-function leave(){if(unsubscribe)unsubscribe();localStorage.removeItem("jerseyRoom");location.reload()}
+    East: [
+      ["Buffalo Bills","BUF"],
+      ["Miami Dolphins","MIA"],
+      ["New England Patriots","NE"],
+      ["New York Jets","NYJ"]
+    ],
 
-function players(){return Object.entries(state.players||{}).map(([id,p])=>({id,...p}))}
-function claimsFor(id){return state.players?.[id]?.claims||{}}
-function countClaims(id){return Object.keys(claimsFor(id)).length}
+    North: [
+      ["Baltimore Ravens","BAL"],
+      ["Cincinnati Bengals","CIN"],
+      ["Cleveland Browns","CLE"],
+      ["Pittsburgh Steelers","PIT"]
+    ],
 
-function render(){
-  const ps=players();
-  if(!currentPlayerId || !state.players?.[currentPlayerId]) currentPlayerId=ps[0]?.id;
-  const me=state.players?.[currentPlayerId];
-  $("welcome").innerHTML=`${esc(me?.name||"Player")} <span class="tag">${esc(room)}</span>`;
-  $("score").innerHTML=`${countClaims(currentPlayerId)}/32<small>your score</small>`;
-  $("remaining").textContent=`${32-countClaims(currentPlayerId)} remaining`;
+    South: [
+      ["Houston Texans","HOU"],
+      ["Indianapolis Colts","IND"],
+      ["Jacksonville Jaguars","JAX"],
+      ["Tennessee Titans","TEN"]
+    ],
 
-  const picker=$("playerPicker");picker.innerHTML="";
-  ps.forEach(p=>{const b=document.createElement("button");b.className="tab "+(p.id===currentPlayerId?"active":"");b.textContent=`${p.name} · ${countClaims(p.id)}`;b.onclick=()=>{currentPlayerId=p.id;render()};picker.appendChild(b)});
+    West: [
+      ["Denver Broncos","DEN"],
+      ["Kansas City Chiefs","KC"],
+      ["Las Vegas Raiders","LV"],
+      ["Los Angeles Chargers","LAC"]
+    ]
 
-  const grid=$("grid");grid.innerHTML="";
-  teams.forEach(([name,abbr,conf],i)=>{
-    const b=document.createElement("button");b.className="team "+(claimsFor(currentPlayerId)[i]?"done":"");
-    b.innerHTML=`<span><span class="name">${name}</span><br><span class="meta">${abbr} · ${conf}</span></span><span class="tick">${claimsFor(currentPlayerId)[i]?"✓":"＋"}</span>`;
-    b.onclick=()=>{if(!claimsFor(currentPlayerId)[i])openClaim(i)};grid.appendChild(b)
-  });
+  },
 
-  const leaders=$("leaders");leaders.innerHTML="";
-  ps.sort((a,b)=>countClaims(b.id)-countClaims(a.id)||a.name.localeCompare(b.name)).forEach((p,n)=>{
-    const d=document.createElement("div");d.className="leader";d.innerHTML=`<span class="rank">${n+1}</span><span class="lname">${esc(p.name)}</span><span class="points">${countClaims(p.id)}/32</span>`;leaders.appendChild(d)
-  });
+  NFC: {
 
-  const wanted=$("wanted");wanted.innerHTML="";
-  teams.forEach(([name],i)=>{if(!ps.some(p=>claimsFor(p.id)[i])){const s=document.createElement("span");s.textContent=name;wanted.appendChild(s)}});
-  if(!wanted.children.length){const s=document.createElement("span");s.textContent="🎉 Every team has been spotted!";wanted.appendChild(s)}
-}
+    East: [
+      ["Dallas Cowboys","DAL"],
+      ["New York Giants","NYG"],
+      ["Philadelphia Eagles","PHI"],
+      ["Washington Commanders","WAS"]
+    ],
 
-async function openClaim(i){pendingTeam=i;$("claimTitle").textContent=`Claim ${teams[i][0]}?`;$("claimModal").classList.remove("hidden")}
-$("cancelClaim").onclick=()=>{pendingTeam=null;$("claimModal").classList.add("hidden")};
-$("confirmClaim").onclick=async()=>{
-  const i=pendingTeam;if(i===null)return;
-  $("claimModal").classList.add("hidden");pendingTeam=null;
-  try{
-    const path=`games/${room}/players/${currentPlayerId}/claims/${i}`;
-    await set(ref(db,path),Date.now());
-    toast(`✓ ${teams[i][0]} added`);
-  }catch(e){toast("Couldn't save that sighting");console.error(e)}
+    North: [
+      ["Chicago Bears","CHI"],
+      ["Detroit Lions","DET"],
+      ["Green Bay Packers","GB"],
+      ["Minnesota Vikings","MIN"]
+    ],
+
+    South: [
+      ["Atlanta Falcons","ATL"],
+      ["Carolina Panthers","CAR"],
+      ["New Orleans Saints","NO"],
+      ["Tampa Bay Buccaneers","TB"]
+    ],
+
+    West: [
+      ["Arizona Cardinals","ARI"],
+      ["Los Angeles Rams","LAR"],
+      ["San Francisco 49ers","SF"],
+      ["Seattle Seahawks","SEA"]
+    ]
+
+  }
+
 };
-$("changeNameBtn").onclick=async()=>{
-  const current=state?.players?.[uid]?.name||"";
-  const name=(prompt("Enter your new name:",current)||"").trim().slice(0,24);
-  if(!name || name===current)return;
 
-  const duplicate=players().some(p=>
-    p.id!==uid &&
-    String(p.name||"").trim().toLowerCase()===name.toLowerCase()
+
+/* =========================
+   FLAT TEAM LIST
+========================= */
+
+const teams = [];
+
+for(const conference of Object.keys(conferences)){
+
+  for(const division of Object.keys(conferences[conference])){
+
+    for(const team of conferences[conference][division]){
+
+      teams.push({
+        name:team[0],
+        abbr:team[1],
+        conference,
+        division
+      });
+
+    }
+
+  }
+
+}
+
+
+/* =========================
+   STATE
+========================= */
+
+let uid = null;
+let room = "";
+let state = null;
+let pendingTeam = null;
+let unsubscribe = null;
+
+
+/* =========================
+   HELPERS
+========================= */
+
+const $ = id => document.getElementById(id);
+
+const clean = s =>
+  String(s || "")
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9_-]/g,"")
+    .slice(0,12);
+
+
+function esc(s){
+
+  return String(s).replace(
+    /[&<>"']/g,
+    m => ({
+      "&":"&amp;",
+      "<":"&lt;",
+      ">":"&gt;",
+      '"':"&quot;",
+      "'":"&#39;"
+    }[m])
   );
 
-  if(duplicate){
-    toast("That player name is already being used.");
+}
+
+
+function toast(msg){
+
+  $("toast").textContent = msg;
+
+  $("toast").classList.add("show");
+
+  setTimeout(
+    () => $("toast").classList.remove("show"),
+    2200
+  );
+
+}
+
+
+async function ensureAuth(){
+
+  if(uid) return;
+
+  const result = await signInAnonymously(auth);
+
+  uid = result.user.uid;
+
+}
+
+
+function players(){
+
+  return Object.entries(state?.players || {})
+    .map(([id,p]) => ({
+      id,
+      ...p
+    }));
+
+}
+
+
+function teamsState(){
+
+  return state?.teams || {};
+
+}
+
+
+function spottedCount(){
+
+  return teams.filter(
+    (_,i) => teamsState()[i]?.spotted
+  ).length;
+
+}
+
+
+function spotterCounts(){
+
+  const counts = {};
+
+  teams.forEach((_,i)=>{
+
+    const team = teamsState()[i];
+
+    if(!team?.spottedBy) return;
+
+    counts[team.spottedBy] =
+      (counts[team.spottedBy] || 0) + 1;
+
+  });
+
+  return counts;
+
+}
+
+
+function playerName(id){
+
+  return state?.players?.[id]?.name || "Unknown player";
+
+}
+
+
+/* =========================
+   JOIN
+========================= */
+
+async function join(){
+
+  $("setupError").textContent = "";
+
+  const code = clean($("roomInput").value);
+
+  const name =
+    String($("nameInput").value || "")
+      .trim()
+      .slice(0,24);
+
+
+  if(!name){
+
+    $("setupError").textContent =
+      "Enter your name.";
+
     return;
+
   }
+
+
+  if(!code){
+
+    $("setupError").textContent =
+      "Enter a game code.";
+
+    return;
+
+  }
+
 
   try{
-    await update(ref(db,`games/${room}/players/${uid}`),{name});
-    toast("Name updated ✓");
-  }catch(e){
-    toast("Couldn't update your name");
-    console.error(e);
-  }
-};
-$("joinBtn").onclick=join;
-$("leaveBtn").onclick=leave;
-$("roomInput").addEventListener("keydown",e=>{if(e.key==="Enter")join()});
 
-async function createPlayer(){
-  await ensureAuth();
-  const name=(prompt("Enter your player name:")||"").trim().slice(0,24);
-  if(!name)return;
-  const id=uid;
-  await update(ref(db,`games/${room}/players/${id}`),{name,claims:{}});
-  currentPlayerId=id;
-  render();
+    await ensureAuth();
+
+    const snap =
+      await get(ref(db,`games/${code}`));
+
+
+    if(!snap.exists()){
+
+      $("setupError").textContent =
+        "That game code doesn't exist. Ask the host to create it.";
+
+      return;
+
+    }
+
+
+    const data = snap.val();
+
+    const existing =
+      Object.entries(data.players || {});
+
+
+    if(
+      existing.length >= 8 &&
+      !data.players?.[uid]
+    ){
+
+      $("setupError").textContent =
+        "This game already has 8 players.";
+
+      return;
+
+    }
+
+
+    const duplicate =
+      existing.some(([id,p]) =>
+        id !== uid &&
+        String(p.name || "")
+          .trim()
+          .toLowerCase() === name.toLowerCase()
+      );
+
+
+    if(duplicate){
+
+      $("setupError").textContent =
+        "That player name is already being used.";
+
+      return;
+
+    }
+
+
+    room = code;
+
+
+    await update(
+      ref(db,`games/${room}/players/${uid}`),
+      {
+        name
+      }
+    );
+
+
+    localStorage.setItem(
+      "jerseyRoom",
+      room
+    );
+
+
+    showGame();
+
+    listen();
+
+  }
+
+  catch(e){
+
+    console.error(e);
+
+    $("setupError").textContent =
+      "Couldn't connect. Check the Firebase setup.";
+
+  }
+
 }
+
+
+/* =========================
+   LISTEN
+========================= */
+
+function listen(){
+
+  if(unsubscribe)
+    unsubscribe();
+
+
+  unsubscribe = onValue(
+    ref(db,`games/${room}`),
+    snap => {
+
+      state = snap.val();
+
+      if(state)
+        render();
+
+    }
+  );
+
+}
+
+
+/* =========================
+   SHOW GAME
+========================= */
+
+function showGame(){
+
+  $("setup").classList.add("hidden");
+
+  $("game").classList.remove("hidden");
+
+}
+
+
+function leave(){
+
+  if(unsubscribe)
+    unsubscribe();
+
+  localStorage.removeItem("jerseyRoom");
+
+  location.reload();
+
+}
+
+
+/* =========================
+   RENDER
+========================= */
+
+function render(){
+
+  const count = spottedCount();
+
+  const remaining = 32 - count;
+
+
+  const me =
+    state?.players?.[uid];
+
+
+  $("welcome").innerHTML =
+    `${esc(me?.name || "Player")}
+     <span class="tag">${esc(room)}</span>`;
+
+
+  $("score").textContent =
+    `${count}/32`;
+
+
+  $("remainingCount").textContent =
+    `${remaining} remaining`;
+
+
+  $("progressBar").style.width =
+    `${(count / 32) * 100}%`;
+
+
+  renderConferences();
+
+  renderLeaderboard();
+
+  renderRemaining();
+
+}
+
+
+/* =========================
+   CONFERENCES / DIVISIONS
+========================= */
+
+function renderConferences(){
+
+  const container =
+    $("conferenceGrid");
+
+  container.innerHTML = "";
+
+
+  for(const conference of ["AFC","NFC"]){
+
+    const confBox =
+      document.createElement("div");
+
+    confBox.className =
+      "conference";
+
+
+    const conferenceTeams =
+      teams.filter(
+        t => t.conference === conference
+      );
+
+
+    const conferenceComplete =
+      conferenceTeams.every(
+        t => {
+
+          const i = teams.indexOf(t);
+
+          return teamsState()[i]?.spotted;
+
+        }
+      );
+
+
+    confBox.innerHTML = `
+      <div class="conference-title">
+        <span>${conference}</span>
+        <span>${conferenceComplete ? "✓ COMPLETE" : ""}</span>
+      </div>
+    `;
+
+
+    for(const division of Object.keys(
+      conferences[conference]
+    )){
+
+      const divisionBox =
+        document.createElement("div");
+
+      divisionBox.className =
+        "division";
+
+
+      const divisionTeams =
+        teams.filter(
+          t =>
+            t.conference === conference &&
+            t.division === division
+        );
+
+
+      const divisionComplete =
+        divisionTeams.every(
+          t => {
+
+            const i = teams.indexOf(t);
+
+            return teamsState()[i]?.spotted;
+
+          }
+        );
+
+
+      const title =
+        document.createElement("div");
+
+      title.className =
+        "division-title";
+
+
+      title.innerHTML = `
+        <span>${conference} ${division}</span>
+        <span class="complete">
+          ${divisionComplete ? "✓ COMPLETE" : ""}
+        </span>
+      `;
+
+
+      divisionBox.appendChild(title);
+
+
+      divisionTeams.forEach(team => {
+
+        const i =
+          teams.indexOf(team);
+
+        const claim =
+          teamsState()[i];
+
+
+        const button =
+          document.createElement("button");
+
+        button.className =
+          "team" +
+          (claim?.spotted ? " done" : "");
+
+
+        if(claim?.spotted){
+
+          button.innerHTML = `
+            <span>
+              <span class="team-name">
+                ${esc(team.name)}
+              </span>
+
+              <span class="team-meta">
+                ${team.abbr}
+              </span>
+            </span>
+
+            <span class="team-status">
+              ✓ SPOTTED
+              <span class="spotted-by">
+                ${esc(playerName(claim.spottedBy))}
+              </span>
+            </span>
+          `;
+
+          button.disabled = true;
+
+        }
+
+        else{
+
+          button.innerHTML = `
+            <span>
+              <span class="team-name">
+                ${esc(team.name)}
+              </span>
+
+              <span class="team-meta">
+                ${team.abbr}
+              </span>
+            </span>
+
+            <span class="team-status">
+              ＋ SPOT
+            </span>
+          `;
+
+          button.onclick =
+            () => openClaim(i);
+
+        }
+
+
+        divisionBox.appendChild(button);
+
+      });
+
+
+      confBox.appendChild(divisionBox);
+
+    }
+
+
+    container.appendChild(confBox);
+
+  }
+
+}
+
+
+/* =========================
+   LEADERBOARD
+========================= */
+
+function renderLeaderboard(){
+
+  const container =
+    $("leaders");
+
+  container.innerHTML = "";
+
+
+  const counts =
+    spotterCounts();
+
+
+  const rows =
+    players()
+      .map(p => ({
+        id:p.id,
+        name:p.name,
+        score:counts[p.id] || 0
+      }))
+      .sort(
+        (a,b) =>
+          b.score - a.score ||
+          a.name.localeCompare(b.name)
+      );
+
+
+  if(!rows.length){
+
+    container.innerHTML =
+      "<p>No players yet.</p>";
+
+    return;
+
+  }
+
+
+  rows.forEach((p,index)=>{
+
+    const div =
+      document.createElement("div");
+
+    div.className =
+      "leader";
+
+
+    div.innerHTML = `
+      <div class="leader-rank">
+        #${index + 1}
+      </div>
+
+      <div class="leader-name">
+        ${esc(p.name)}
+      </div>
+
+      <div class="leader-score">
+        ${p.score}
+      </div>
+
+      <div class="leader-rank">
+        jerseys spotted
+      </div>
+    `;
+
+
+    container.appendChild(div);
+
+  });
+
+}
+
+
+/* =========================
+   REMAINING
+========================= */
+
+function renderRemaining(){
+
+  const container =
+    $("remainingTeams");
+
+  container.innerHTML = "";
+
+
+  teams.forEach((team,i)=>{
+
+    if(teamsState()[i]?.spotted)
+      return;
+
+
+    const span =
+      document.createElement("span");
+
+    span.textContent =
+      team.name;
+
+    container.appendChild(span);
+
+  });
+
+
+  if(!container.children.length){
+
+    const span =
+      document.createElement("span");
+
+    span.textContent =
+      "🎉 ALL 32 TEAMS SPOTTED!";
+
+    container.appendChild(span);
+
+  }
+
+}
+
+
+/* =========================
+   CLAIM
+========================= */
+
+function openClaim(i){
+
+  pendingTeam = i;
+
+  $("claimTitle").textContent =
+    `Spot ${teams[i].name}?`;
+
+  $("claimModal")
+    .classList.remove("hidden");
+
+}
+
+
+$("cancelClaim").onclick = () => {
+
+  pendingTeam = null;
+
+  $("claimModal")
+    .classList.add("hidden");
+
+};
+
+
+/* =========================
+   ATOMIC TEAM CLAIM
+========================= */
+
+$("confirmClaim").onclick = async () => {
+
+  const i = pendingTeam;
+
+  if(i === null)
+    return;
+
+
+  $("claimModal")
+    .classList.add("hidden");
+
+  pendingTeam = null;
+
+
+  try{
+
+    const teamRef =
+      ref(db,`games/${room}/teams/${i}`);
+
+
+    const result =
+      await runTransaction(
+        teamRef,
+        current => {
+
+          /*
+           * If somebody else has already
+           * spotted this team, leave it alone.
+           */
+
+          if(current?.spotted)
+            return;
+
+
+          return {
+            spotted:true,
+            spottedBy:uid,
+            spottedAt:Date.now()
+          };
+
+        }
+      );
+
+
+    if(result.committed){
+
+      toast(
+        `✓ ${teams[i].name} spotted by you`
+      );
+
+    }
+
+    else{
+
+      toast(
+        `${teams[i].name} was already spotted`
+      );
+
+    }
+
+  }
+
+  catch(e){
+
+    console.error(e);
+
+    toast(
+      "Couldn't save that sighting"
+    );
+
+  }
+
+};
+
+
+/* =========================
+   CHANGE NAME
+========================= */
+
+$("changeNameBtn").onclick = async () => {
+
+  const current =
+    state?.players?.[uid]?.name || "";
+
+
+  const name =
+    (
+      prompt(
+        "Enter your new name:",
+        current
+      ) || ""
+    )
+      .trim()
+      .slice(0,24);
+
+
+  if(!name || name === current)
+    return;
+
+
+  const duplicate =
+    players().some(p =>
+      p.id !== uid &&
+      String(p.name || "")
+        .trim()
+        .toLowerCase() === name.toLowerCase()
+    );
+
+
+  if(duplicate){
+
+    toast(
+      "That player name is already being used."
+    );
+
+    return;
+
+  }
+
+
+  try{
+
+    await update(
+      ref(db,`games/${room}/players/${uid}`),
+      {
+        name
+      }
+    );
+
+
+    toast("Name updated ✓");
+
+  }
+
+  catch(e){
+
+    console.error(e);
+
+    toast(
+      "Couldn't update your name"
+    );
+
+  }
+
+};
+
+
+/* =========================
+   BUTTONS
+========================= */
+
+$("joinBtn").onclick =
+  join;
+
+
+$("leaveBtn").onclick =
+  leave;
+
+
+$("roomInput").addEventListener(
+  "keydown",
+  e => {
+
+    if(e.key === "Enter")
+      join();
+
+  }
+);
+
+
+/* =========================
+   RESTORE EXISTING GAME
+========================= */
 
 async function boot(){
-  const saved=localStorage.getItem("jerseyRoom");
-  if(saved){
-    try{
-      await ensureAuth();
-      const snap=await get(ref(db,`games/${saved}`));
-      if(snap.exists()){room=saved;showGame();listen();return}
-    }catch(e){}
+
+  const saved =
+    localStorage.getItem("jerseyRoom");
+
+
+  if(!saved)
+    return;
+
+
+  try{
+
+    await ensureAuth();
+
+
+    const snap =
+      await get(
+        ref(db,`games/${saved}`)
+      );
+
+
+    if(snap.exists()){
+
+      room = saved;
+
+      showGame();
+
+      listen();
+
+    }
+
   }
+
+  catch(e){
+
+    console.error(e);
+
+  }
+
 }
+
+
 boot();
-window.createPlayer=createPlayer;
+
 </script>
+
 </body>
 </html>
